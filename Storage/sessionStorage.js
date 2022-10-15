@@ -25,3 +25,18 @@ document.querySelector("#mostrar").innerText =
 
 // Remove item do sessionStorage
 sessionStorage.removeItem("dadoDoUsuario");
+
+let vetor = ["pera", "banana", "manga"];
+
+// JSON.steingify converte vetores e objetos em String para que possamos salvar em Session Storage
+sessionStorage.setItem("frutas", JSON.stringify(vetor));
+
+// Para recuperar uma string JSON do localStorage ou sessionStorage e trasnformar um objeto ou vetor em novamente user JSON.parse()
+let recuperaDado = JSON.parse(sessionStorage.getItem("frutas"));
+
+recuperaDado[3] = "morango";
+recuperaDado[4] = "abacaxi";
+
+let stringrecupDados = JSON.stringify(recuperaDado);
+sessionStorage.setItem("frutas", stringrecupDados))
+
