@@ -5,6 +5,7 @@ let btnLimpar = document.querySelector(".limpar-tarefas");
 let filtro = document.querySelector("#filtro");
 
 function carregaMonitoresEventos() {
+	document.addEventListener("DOMContentLoaded", recuperaTarefas);
 	btnAddTarefa.addEventListener("click", adicionarTarefa);
 	btnLimpar.addEventListener("click", removeTudo);
 	filtro.addEventListener("keyup", filtrarLista);
@@ -19,7 +20,27 @@ function apagarTarefa(evento) {
 	// Pega o alvo pai
 	if (evento.target.parentElement.classList.contains("apaga-tarefa")) {
 		evento.target.parentElement.parentElement.remove();
+		apagaLStorage(evento.target.parentElement.parentElement);
 	}
+}
+
+function apagaLStorage(tarefa) {
+	let tarefaParaSerApagada = tarefa.innertext;
+	let tarefas = [];
+
+	if (localStorage.getItem("tarefas") != null) {
+		// Tranforma em um objeto JSON não uma string
+		tarefas = JSON.parse(localStorage.getItem("tarefas"));
+	}
+
+	tarefas.forEach(function (tarefa, indice) {
+		if (tarefaParaSerApagada == tarefa) {
+			tarefas.splice(indice, 1);
+		}
+	});
+
+	//gravar o objeto JSON no localStorage novamente
+	localStorage.setItem("tarefas", JSON.stringify(tarefas));
 }
 
 carregaMonitoresEventos();
@@ -56,8 +77,8 @@ function adicionarTarefa(evento) {
 
 function removeTudo(evento) {
 	evento.preventDefault();
-
 	lista.remove();
+	localStorage.removeItem("tarefas");
 }
 
 // Pegar caracter por carcter
@@ -86,7 +107,33 @@ function gravarTarefa(tarefa) {
 
 	tarefas.push(tarefa);
 	localStorage.setItem("tarefas", JSON.stringify(tarefas));
-	lista = localStorage.getItem("tarefas");
+}
 
-	// lista.innerText = localStorage.getItem("tarefa");
+function recuperaTarefas(evento) {
+	let tarefas = localStorage.getItem("tarefas");
+
+	if (tarefas == null) {
+		tarefas = [];
+	}
+
+	// Transforma em objeto
+	tarefas = JSON.parse(tarefas);
+
+	tarefas.forEach(function (tarefa) {
+		// Cria novo Li com a nova tarefa
+		const li = document.createElement("li");
+		li.className = "collection-item";
+		li.appendChild(document.createTextNode(entradaTarefa.value));
+
+		// Cria o X que fecha a tarefa
+		const a = document.createElement("a");
+		a.className = "apaga-tarefa secondary-content";
+
+		const i = document.createElement("i");
+		i.className = "fa fa-remove";
+
+		a.appendChild(i);
+		li.appendChild(a);
+		lista.appendChild(li);
+	});
 }
